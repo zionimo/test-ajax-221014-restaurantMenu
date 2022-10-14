@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <style>
+    body {
+      color: rgb(0, 0, 0);
+    }
+
+    #info {
+      border: solid 2px nav;
+      margin: 15px;
+    }
+
+    .list {
+      border: solid 3px #ffe57f;
+      border-radius: 30px;
+      padding: 0px 0px 30px 10px;
+      margin: 10px;
+    }
+    h1 {
+      background-color: #ffd54f;
+      border-radius: 30px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .list p {
+      display: inline;
+    }
+  </style>
+
+  <body>
+    <div id="info">
+      <h1>메뉴 리스트 입니다</h1>
+      <h2>식당 이름</h2>
+      <p id="">메뉴 카테고리 대분류명 - 메뉴이름</p>
+      <button id="next-btn">추가</button>
+    </div>
+
+    <script>
+      async function menu(nextCount) {
+        // 가게명 가져옴
+        const response = await fetch("./공공데이터.json");
+
+        let data = 0;
+        if (response.ok) {
+          data = await response.json();
+          // 출력확인
+          console.log(data);
+          console.log(data.body[0].RSTR_NM);
+        }
+
+        // 카테고리와 메뉴명 가져옴
+        const menuResponse = await fetch("./공공데이터.json");
+
+        let menuData = 0;
+        if (menuResponse.ok) {
+          menuData = await menuResponse.json();
+          // 출력확인
+          console.log(menuData);
+          console.log(menuData.body[0].MENU_CTGRY_LCLAS_NM);
+          console.log(menuData.body[0].MENU_NM);
+        }
+
+        // DOM 만들기
+        const RSTRNm = data.body[0].RSTR_NM;
+        const menuCTGRY = menuData.body[0].MENU_CTGRY_LCLAS_NM;
+        const menuNm = menuData.body[0].MENU_NM;
+
+        function menuTag(RSTRNm, menuCTGRY, menuNm) {
+          // DOM 요소 만들어서 출력하기
+          const RSTRNmTag = document.createElement("h2");
+          RSTRNmTag.innerHTML = RSTRNm;
+          const menuCTGRYTag = document.createElement("p");
+          menuCTGRYTag.innerHTML = menuCTGRY;
+          const menuNmTag = document.createElement("p");
+          menuNmTag.innerHTML = menuNm;
+
+          // div로 menuBox 묶기
+          const menuBox = document.createElement("div");
+          menuBox.append(RSTRNmTag);
+          menuBox.append(menuCTGRYTag);
+          menuBox.append(" - ");
+          menuBox.append(menuNmTag);
+          menuBox.classList.add("list");
+
+          // menuBox 추가
+          document.querySelector("body").append(menuBox);
+        }
+        for (let i = nextCount; i < nextCount + 5; i++) {
+          let count = 0;
+          for (let j = nextCount; j < 1000; j++) {
+            if (menuData.body[j].MENU_ID == data.body[i].MENU_ID) {
+              count = j;
+              console.log("console", j);
+              break;
+            }
+          }
+          //console.log(count)
+          menuTag(data.body[i].RSTR_NM, menuData.body[count].MENU_CTGRY_LCLAS_NM, menuData.body[count].MENU_NM);
+        }
+      }
+
+      // 버튼 누를 시 내용 출력
+      menu(0);
+
+      let nextCount = 0;
+      const button = document.querySelector("#next-btn");
+      button.addEventListener("click", () => {
+        console.log(nextCount);
+        nextCount += 5;
+        menu(nextCount);
+      });
+    </script>
+  </body>
+</html>
