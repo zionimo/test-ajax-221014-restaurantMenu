@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>공공데이터</title>
+    <style>
+      .menu-style {
+        border: solid 1px grey;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="info">
+      <h1>식당이름</h1>
+      <p id="">메뉴카테고리 대분류명 - 메뉴이름</p>
+      <button id="addMenu">추가</button>
+    </div>
+
+    <script>
+      // FethAPI와 asyn/await
+
+      async function getData(count) {
+        const response = await fetch("./공공데이터.json", { method: "GET" });
+        //  {method:"GET"}을 별도로 작성하지 않으면 자동으로 첨가되기 때문에 작성하지 않아도 무관함
+        const data = await response.json();
+
+        const menuNM = data.body[0].MENU_NM;
+        const menuLC = data.body[0].MENU_CTGRY_LCLAS_NM;
+        const menuRT = data.body[0].RSTR_NM;
+
+        function menuElementAdd(menuRT, menuLC, menuNM) {
+          const menuRTTag = document.createElement("h1");
+          menuRTTag.innerHTML = menuRT;
+          const menuD = document.createElement("p");
+          menuD.innerHTML = `${menuLC} - ${menuNM}`;
+
+          const menu = document.createElement("div");
+          menu.append(menuRTTag);
+          menu.append(menuD);
+
+          document.querySelector("body").append(menu);
+          menu.classList.add("menu-style");
+        }
+
+        for (let i = count; i < count + 5; i++) {
+          menuElementAdd(data.body[i].RSTR_NM, data.body[i].MENU_CTGRY_LCLAS_NM, data.body[i].MENU_NM);
+        }
+      }
+
+      let count = 0;
+      getData(count);
+
+      document.querySelector("#addMenu").addEventListener("click", function () {
+        count += 5;
+        getData(count);
+      });
+    </script>
+  </body>
+</html>
